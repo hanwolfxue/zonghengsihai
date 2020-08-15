@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.0//EN" "http://www.wapforum.org/DTD/xhtml-mobile10.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <title>提示Demo</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="author" content="袁开宇" />
+  <link rel="shortcut icon" href="./assets/favicon.ico">
+  <link rel="stylesheet" href="./index.css">
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
+</head>
+
+<body>
+  <div id="contentBox"></div>
+  <script language="javascript">
+    window.onload = () => {
+      playSound();
+    }
+
+    function getRequest() {
+      axios.get('https://admin.gbhome.com/api/v4/common/3in1/zlContent?pageNum=1&pageSize=3&zlId=1000004')
+        .then(function (response) {
+          console.log("inter -> response", response);
+          if (window.localStorage.total) {
+            if (window.localStorage.total !== response.data.data.total) {
+              console.log('有更新 打开新标签页');
+              window.localStorage.total = response.data.data.total;
+              let {
+                records
+              } = response.data.data;
+              records.forEach((item, index) => {
+                let content = item.content;
+                content = content.replace(/\n/g, "<br/>")
+                $('#contentBox').append(
+                  `<div class="content"><h3>第${index+1}条</h3><div><span class="font">标题 </span> ${item.title}</div><div><span class="font">内容 </span> ${content}</div><div><span class="font">时间 </span> ${item.createTime}</div></div>`
+                );
+              })
+              window.open('https://cn.bing.com/', 'target');
+            } else {
+              console.log('没更新 什么都不做');
+            }
+          } else {
+            window.localStorage.total = response.data.data.total;
+            let {
+              records
+            } = response.data.data;
+            records.forEach((item, index) => {
+              let content = item.content;
+              content = content.replace(/\n/g, "<br/>")
+              $('#contentBox').append(
+                `<div class="content"><h3>第${index+1}条</h3><div><span class="font">标题 </span> ${item.title}</div><div><span class="font">内容 </span> ${content}</div><div><span class="font">时间 </span> ${item.createTime}</div></div>`
+              );
+            })
+          }
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    }
+
+    function playSound() {
+      let count = 0
+      getRequest();
+      var inter = setInterval(() => {
+        getRequest();
+      }, 5000)
+    }
+  </script>
+</body>
+
+</html>

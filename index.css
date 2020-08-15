@@ -1,0 +1,10 @@
+.content {
+  padding: 10px 10px;
+  width: 80%;
+  line-height: 32px;
+  margin: 10px auto;
+  background-color: #ffd2d2;
+}
+.font {
+  color: red;
+}
