@@ -14,34 +14,51 @@
 <body>
   <div id="contentBox"></div>
   <script language="javascript">
+    let count = 0
     window.onload = () => {
       playSound();
     }
 
     function getRequest() {
-      axios.get('https://admin.gbhome.com/api/v4/common/3in1/zlContent?pageNum=1&pageSize=3&zlId=1000004')
+      axios.get('https://admin.gbhome.com/api/v4/common/3in1/zlContent?pageNum=1&pageSize=10&zlId=1000004')
         .then(function (response) {
           console.log("inter -> response", response);
           if (window.localStorage.total) {
             if (window.localStorage.total !== response.data.data.total) {
               console.log('有更新 打开新标签页');
+              window.open('https://cn.bing.com/', 'target');
               window.localStorage.total = response.data.data.total;
               let {
                 records
               } = response.data.data;
+              $('#contentBox').empty();
               records.forEach((item, index) => {
                 let content = item.content;
                 content = content.replace(/\n/g, "<br/>")
                 $('#contentBox').append(
-                  `<div class="content"><h3>第${index+1}条</h3><div><span class="font">标题 </span> ${item.title}</div><div><span class="font">内容 </span> ${content}</div><div><span class="font">时间 </span> ${item.createTime}</div></div>`
+                  `<div class="content"><h3>第${index+1}条</h3><div><span class="font">标题 </span> ${item.title}</div><div><span class="font">内容 </span> ${content}</div><div><span class="font">总结 </span>${item.summary}</div><div><span class="font">时间 </span> ${item.createTime}</div></div>`
                 );
               })
-              window.open('https://cn.bing.com/', 'target');
             } else {
+              if (count === 0) {
+                let {
+                  records
+                } = response.data.data;
+                $('#contentBox').empty();
+                records.forEach((item, index) => {
+                  let content = item.content;
+                  content = content.replace(/\n/g, "<br/>")
+                  $('#contentBox').append(
+                    `<div class="content"><h3>第${index+1}条</h3><div><span class="font">标题 </span> ${item.title}</div><div><span class="font">内容 </span> ${content}</div><div><span class="font">总结 </span>${item.summary}</div><div><span class="font">时间 </span> ${item.createTime}</div></div>`
+                  );
+                })
+              }
+              count++;
               console.log('没更新 什么都不做');
             }
           } else {
             window.localStorage.total = response.data.data.total;
+            $('#contentBox').empty();
             let {
               records
             } = response.data.data;
@@ -49,7 +66,7 @@
               let content = item.content;
               content = content.replace(/\n/g, "<br/>")
               $('#contentBox').append(
-                `<div class="content"><h3>第${index+1}条</h3><div><span class="font">标题 </span> ${item.title}</div><div><span class="font">内容 </span> ${content}</div><div><span class="font">时间 </span> ${item.createTime}</div></div>`
+                `<div class="content"><h3>第${index+1}条</h3><div><span class="font">标题 </span> ${item.title}</div><div><span class="font">内容 </span> ${content}</div><div><span class="font">总结 </span>${item.summary}</div><div><span class="font">时间 </span> ${item.createTime}</div></div>`
               );
             })
           }
@@ -60,7 +77,6 @@
     }
 
     function playSound() {
-      let count = 0
       getRequest();
       var inter = setInterval(() => {
         getRequest();
